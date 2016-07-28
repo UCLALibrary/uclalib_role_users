@@ -1,9 +1,14 @@
 ---
 
-- name: Create user
-#  debug: msg="ID {{ item.key }} username {{ item.value.username }} home directory {{ item.value.homedir }}"
-  user: name={{ item.value.username }} createhome=yes home={{ item.value.homedir }} comment={{ item.value.fullname }} 
+- name: Create user with password
+  user: name={{ item.value.username }} createhome=yes home={{ item.value.homedir }} comment={{ item.value.fullname }} password={{ item.value.pwhash }} state=present
   with_dict: "{{ user }}"
+  when: item.value.pwhash is defined
+
+- name: Create user without password
+  user: name={{ item.value.username }} createhome=yes home={{ item.value.homedir }} comment={{ item.value.fullname }}  state=present
+  with_dict: "{{ user }}"
+  when: item.value.pwhash is undefined
 
 #- name: Set up authorized_keys for user
 #  authorized_key: user={{ username }} key="{{ user }}"
