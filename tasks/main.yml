@@ -2,7 +2,7 @@
 
 - name: Create user
 #  debug: msg="ID {{ item.key }} username {{ item.value.username }} home directory {{ item.value.homedir }}"
-  user: name={{ item.value.username }} createhome=yes home={{ item.value.homedir }} comment={{ item.value.fullname }} state=absent
+  user: name={{ item.value.username }} createhome=yes home={{ item.value.homedir }} comment={{ item.value.fullname }} 
   with_dict: "{{ user }}"
 
 #- name: Set up authorized_keys for user
