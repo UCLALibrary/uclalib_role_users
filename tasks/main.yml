@@ -1,12 +1,12 @@
 ---
 
 - name: Create user with password
-  user: name={{ item.value.username }} createhome=yes home={{ item.value.homedir }} comment={{ item.value.fullname }} password={{ item.value.pwhash }} state=present
+  user: name={{ item.value.username }} createhome=yes home={{ item.value.homedir }} comment={{ item.value.fullname }} password={{ item.value.pwhash }} groups={{ item.value.groupof }} state=present
   with_dict: "{{ user }}"
   when: item.value.pwhash is defined
 
 - name: Create user without password
-  user: name={{ item.value.username }} createhome=yes home={{ item.value.homedir }} comment={{ item.value.fullname }}  state=present
+  user: name={{ item.value.username }} createhome=yes home={{ item.value.homedir }} comment={{ item.value.fullname }} {{ item.value.groupof }} state=present
   with_dict: "{{ user }}"
   when: item.value.pwhash is undefined
 
