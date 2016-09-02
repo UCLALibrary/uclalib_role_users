@@ -1,14 +1,23 @@
 ---
+- name: Create group
+  group: name={{ item.value.name }} gid={{ item.value.gid }} state=present
+  with_dict: "{{ group }}"
 
-- name: Create user with password
-  user: name={{ item.value.username }} createhome=yes home={{ item.value.homedir }} comment={{ item.value.fullname }} password={{ item.value.pwhash }} groups={{ item.value.groupof }} state=present
+- name: Create user 
+  user: uid={{ item.value.uid }} name={{ item.value.username }} createhome=yes home={{ item.value.homedir }} comment={{ item.value.fullname }} group={{ item.value.group }} state=present
+  with_dict: "{{ user }}"
+
+- name: Set member of group
+  user: uid={{ item.value.uid }} name={{ item.value.username }} groups={{ item.value.groupof }} state=present
+  with_dict: "{{ user }}"
+  when: item.value.groupof is defined
+
+- name: Set password
+  user: uid={{ item.value.uid }} name={{ item.value.username }} password={{ item.value.pwhash }} state=present
   with_dict: "{{ user }}"
   when: item.value.pwhash is defined
 
-- name: Create user without password
-  user: name={{ item.value.username }} createhome=yes home={{ item.value.homedir }} comment={{ item.value.fullname }} {{ item.value.groupof }} state=present
+- name: Set up authorized_keys for user
+  authorized_key: user={{ item.value.username }} key={{ item.value.id_rsa_pub }}
   with_dict: "{{ user }}"
-  when: item.value.pwhash is undefined
-
-#- name: Set up authorized_keys for user
-#  authorized_key: user={{ username }} key="{{ user }}"
+  when: item.value.id_rsa_pub is defined
