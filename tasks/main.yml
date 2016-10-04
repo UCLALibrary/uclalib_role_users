@@ -16,6 +16,7 @@
   user: uid={{ item.value.uid }} name={{ item.value.username }} password={{ item.value.pwhash }} state=present
   with_dict: "{{ user }}"
   when: item.value.pwhash is defined
+  no_log: True
 
 - name: Set up authorized_keys for user
   authorized_key: user={{ item.value.username }} key={{ item.value.id_rsa_pub }}
