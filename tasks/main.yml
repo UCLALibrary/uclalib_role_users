@@ -1,24 +1,44 @@
 ---
 - name: Create group
-  group: name={{ item.value.name }} gid={{ item.value.gid }} state=present
+  group: 
+    name: "{{ item.value.name }}"
+    gid: "{{ item.value.gid }}"
+    state: present
   with_dict: "{{ group }}"
 
 - name: Create user 
-  user: uid={{ item.value.uid }} name={{ item.value.username }} createhome=yes home={{ item.value.homedir }} comment={{ item.value.fullname }} group={{ item.value.group }} state=present
-  with_dict: "{{ user }}"
+  user:
+    uid: "{{ item.value.uid }}"
+    name: "{{ item.value.username }}"
+    createhome: yes
+    home: "{{ item.value.homedir }}"
+    comment: "{{ item.value.fullname }}"
+    group: "{{ item.value.group }}"
+    state: present
+  with_dict: "{{ users }}"
 
 - name: Set member of group
-  user: uid={{ item.value.uid }} name={{ item.value.username }} groups={{ item.value.groupof }} state=present
-  with_dict: "{{ user }}"
+  user:
+    uid: "{{ item.value.uid }}"
+    name: "{{ item.value.username }}"
+    groups: "{{ item.value.groupof }}"
+    state: present
+  with_dict: "{{ users }}"
   when: item.value.groupof is defined
 
 - name: Set password
-  user: uid={{ item.value.uid }} name={{ item.value.username }} password={{ item.value.pwhash }} state=present
-  with_dict: "{{ user }}"
+  user:
+    uid: "{{ item.value.uid }}"
+    name: "{{ item.value.username }}"
+    password: "{{ item.value.pwhash }}"
+    state: present
+  with_dict: "{{ users }}"
   when: item.value.pwhash is defined
   no_log: True
 
 - name: Set up authorized_keys for user
-  authorized_key: user={{ item.value.username }} key={{ item.value.id_rsa_pub }}
-  with_dict: "{{ user }}"
+  authorized_key:
+    user: "{{ item.value.username }}"
+    key: "{{ item.value.id_rsa_pub }}"
+  with_dict: "{{ users }}"
   when: item.value.id_rsa_pub is defined
