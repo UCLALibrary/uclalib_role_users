@@ -36,9 +36,29 @@
   when: item.value.pwhash is defined
   no_log: True
 
+- name: Set up empty ssh directory
+  file:
+    path: "{{ item.value.homedir }}"
+    mode: 0700
+    owner: "{{ item.value.username }}"
+    group: "{{ item.value.group }}"
+  with_dict: "{{ users }}"
+  when: users is defined
+
 - name: Set up authorized_keys for user
   authorized_key:
     user: "{{ item.value.username }}"
     key: "{{ item.value.id_rsa_pub }}"
   with_dict: "{{ users }}"
   when: item.value.id_rsa_pub is defined
+
+- name: set up default private ssh keys
+  copy:
+    content: "{{ item.value.sshkey }}"
+    dest: "{{ item.value.keypath }}"
+    mode: 0600
+    owner: "{{ item.key }}"
+    group: "{{ item.value.group }}"
+  with_dict: "{{ private_default_ssh_key }}"
+  when: private_default_ssh_key is defined
+  no_log: True
