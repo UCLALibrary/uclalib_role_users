@@ -1,0 +1,20 @@
+---
+
+- name: Create Users
+  user:
+    name: "{{ item.name }}"
+    uid: "{{ item.uid | default (omit) }}"
+    createhome: yes
+    home: "{{ item.homedir  | default (omit) }}"
+    comment: "{{ item.fullname | default (omit) }}"
+    group: "{{ item.group | default (omit) }}"
+    groups: "{{ item.groups | default (omit) }}"
+    state: present
+  loop: "{{ local_users }}"
+
+- name: Set up authorized_keys for Users
+  authorized_key:
+    user: "{{ item.0.name }}"
+    key: "{{ item.1 }}"
+    manage_dir: true
+  loop: "{{ local_users | subelements('authorized_keys', skip_missing=true) }}"
