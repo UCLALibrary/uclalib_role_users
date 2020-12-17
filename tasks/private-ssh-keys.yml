@@ -1,0 +1,21 @@
+---
+
+- name: Create ssh Directory
+  file:
+    path: ~/.ssh
+    mode: 0700
+    state: directory
+  loop: "{{ local_ssh_keys }}"
+  become_user: "{{ item.name }}"
+  become: true
+  no_log: true
+
+- name: Set up Default Private ssh Keys
+  copy:
+    content: "{{ item.sshkey }}"
+    dest: "~/.ssh/{{ item.keyname }}"
+    mode: 0600
+  loop: "{{ local_ssh_keys }}"
+  become_user: "{{ item.name }}"
+  become: true
+  no_log: true

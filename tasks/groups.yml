@@ -1,0 +1,8 @@
+---
+
+- name: Create System Groups
+  group:
+    name: "{{ item.name }}"
+    gid: "{{ item.gid | default (omit) }}"
+    state: present
+  loop: "{{ local_groups }}"
